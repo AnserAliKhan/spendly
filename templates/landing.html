@@ -2,6 +2,95 @@
 
 {% block title %}Spendly — Track Every Rupee{% endblock %}
 
+{% block head %}
+<style>
+    /* ------------------------------------------------------------------ */
+    /* Video modal                                                        */
+    /* ------------------------------------------------------------------ */
+
+    .video-modal {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 15, 15, 0.78);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+        z-index: 1000;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.2s ease, visibility 0.2s ease;
+    }
+
+    .video-modal.is-open {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .video-modal-dialog {
+        position: relative;
+        width: 75%;
+        max-width: 720px;
+        background: var(--paper-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        overflow: hidden;
+        transform: translateY(8px);
+        transition: transform 0.2s ease;
+    }
+
+    .video-modal.is-open .video-modal-dialog {
+        transform: translateY(0);
+    }
+
+    .video-modal-frame {
+        position: relative;
+        width: 100%;
+        padding-top: 56.25%; /* 16:9 */
+        background: var(--ink);
+    }
+
+    .video-modal-frame iframe {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        border: 0;
+    }
+
+    .video-modal-close {
+        position: absolute;
+        top: -14px;
+        right: -14px;
+        width: 36px;
+        height: 36px;
+        border-radius: 999px;
+        background: var(--paper-card);
+        color: var(--ink);
+        border: 1px solid var(--border);
+        font-size: 1.25rem;
+        line-height: 1;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        transition: transform 0.15s ease, background 0.15s ease;
+    }
+
+    .video-modal-close:hover {
+        background: var(--ink);
+        color: var(--paper);
+        transform: scale(1.05);
+    }
+
+    body.video-modal-open {
+        overflow: hidden;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 
 <section class="hero">
@@ -23,7 +112,7 @@
 
         <div class="hero-actions">
             <a href="{{ url_for('register') }}" class="btn-primary">Create free account</a>
-            <a href="#" class="btn-secondary">See how it works</a>
+            <a href="#" class="btn-secondary" id="howItWorksTrigger">See how it works</a>
         </div>
     </div>
 
@@ -105,4 +194,83 @@
     </div>
 </section>
 
+<!-- Video modal — opened by "See how it works" -->
+<div class="video-modal" id="howItWorksModal" aria-hidden="true" role="dialog" aria-modal="true" aria-label="See how Spendly works">
+    <div class="video-modal-dialog" role="document">
+        <button type="button" class="video-modal-close" id="howItWorksClose" aria-label="Close video">×</button>
+        <div class="video-modal-frame">
+            <iframe
+                id="howItWorksFrame"
+                data-src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+                src=""
+                title="See how Spendly works"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen
+                loading="lazy"></iframe>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function () {
+    'use strict';
+
+    var trigger = document.getElementById('howItWorksTrigger');
+    var modal   = document.getElementById('howItWorksModal');
+    var closeBtn = document.getElementById('howItWorksClose');
+    var frame   = document.getElementById('howItWorksFrame');
+
+    if (!trigger || !modal || !closeBtn || !frame) return;
+
+    function openModal() {
+        // Restore the original src only if it was cleared on close.
+        // autoplay=1 makes the video play as soon as the iframe loads.
+        if (!frame.getAttribute('src')) {
+            var original = frame.getAttribute('data-src');
+            var url = original;
+            if (original.indexOf('?') === -1) {
+                url = original + '?autoplay=1&rel=0';
+            } else {
+                url = original + '&autoplay=1&rel=0';
+            }
+            frame.setAttribute('src', url);
+        }
+        modal.classList.add('is-open');
+        modal.setAttribute('aria-hidden', 'false');
+        document.body.classList.add('video-modal-open');
+    }
+
+    function closeModal() {
+        modal.classList.remove('is-open');
+        modal.setAttribute('aria-hidden', 'true');
+        document.body.classList.remove('video-modal-open');
+        // Stop the video by clearing the iframe src. Restoring happens on next open.
+        frame.setAttribute('src', '');
+    }
+
+    trigger.addEventListener('click', function (e) {
+        e.preventDefault();
+        openModal();
+    });
+
+    closeBtn.addEventListener('click', closeModal);
+
+    // Click on the overlay (outside the dialog) closes the modal.
+    modal.addEventListener('click', function (e) {
+        if (e.target === modal) {
+            closeModal();
+        }
+    });
+
+    // Escape key also closes — small UX bonus, no extra dependency.
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && modal.classList.contains('is-open')) {
+            closeModal();
+        }
+    });
+})();
+</script>
 {% endblock %}
