@@ -1,0 +1,219 @@
+{% extends "base.html" %}
+
+{% block title %}Terms and Conditions — Spendly{% endblock %}
+
+{% block head %}
+<style>
+    .legal {
+        padding: 4rem 2rem 5rem;
+        background: var(--paper);
+    }
+    .legal-inner {
+        max-width: 760px;
+        margin: 0 auto;
+    }
+    .legal-back {
+        display: inline-block;
+        font-size: 0.85rem;
+        color: var(--ink-muted);
+        margin-bottom: 2rem;
+        transition: color 0.2s;
+    }
+    .legal-back:hover { color: var(--ink); }
+
+    .legal-header { margin-bottom: 2.5rem; }
+    .legal-eyebrow {
+        display: inline-block;
+        background: var(--accent-light);
+        color: var(--accent);
+        font-size: 0.72rem;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        padding: 0.3rem 0.75rem;
+        border-radius: 999px;
+        margin-bottom: 1rem;
+    }
+    .legal-title {
+        font-family: var(--font-display);
+        font-size: clamp(2rem, 4vw, 2.75rem);
+        line-height: 1.15;
+        letter-spacing: -0.01em;
+        color: var(--ink);
+        margin-bottom: 0.5rem;
+    }
+    .legal-updated {
+        font-size: 0.8rem;
+        color: var(--ink-faint);
+        letter-spacing: 0.04em;
+    }
+
+    .legal-intro {
+        font-size: 1.02rem;
+        color: var(--ink-soft);
+        line-height: 1.75;
+        margin-bottom: 2.5rem;
+        padding-bottom: 2rem;
+        border-bottom: 1px solid var(--border-soft);
+    }
+
+    .legal-section { margin-bottom: 2.25rem; }
+    .legal-h2 {
+        font-family: var(--font-display);
+        font-size: 1.35rem;
+        color: var(--ink);
+        margin-bottom: 0.75rem;
+        line-height: 1.3;
+    }
+    .legal-section p {
+        font-size: 0.95rem;
+        color: var(--ink-soft);
+        line-height: 1.75;
+        margin-bottom: 0.85rem;
+    }
+    .legal-section p:last-child { margin-bottom: 0; }
+    .legal-section a {
+        color: var(--accent);
+        border-bottom: 1px solid var(--accent-light);
+        transition: border-color 0.2s;
+    }
+    .legal-section a:hover { border-color: var(--accent); }
+
+    .legal-actions {
+        margin-top: 3rem;
+        padding-top: 2rem;
+        border-top: 1px solid var(--border-soft);
+        display: flex;
+        justify-content: center;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<section class="legal">
+    <div class="legal-inner">
+        <a href="{{ url_for('landing') }}" class="legal-back">← Back to home</a>
+
+        <header class="legal-header">
+            <span class="legal-eyebrow">Legal</span>
+            <h1 class="legal-title">Terms and Conditions</h1>
+            <p class="legal-updated">Last updated: June 27, 2026</p>
+        </header>
+
+        <p class="legal-intro">
+            These Terms and Conditions govern your use of Spendly, a personal
+            expense tracking application. By creating an account or using the
+            service, you agree to be bound by the terms below. Please read them
+            carefully before continuing.
+        </p>
+
+        <article class="legal-section">
+            <h2 class="legal-h2">1. Acceptance of Terms</h2>
+            <p>
+                By accessing or using Spendly, you confirm that you are at least
+                13 years of age and that you have read, understood, and agreed
+                to these Terms. If you do not agree, you must not use the
+                service. Continued use of Spendly after any changes to these
+                Terms constitutes your acceptance of the revised terms.
+            </p>
+        </article>
+
+        <article class="legal-section">
+            <h2 class="legal-h2">2. Use of the Service</h2>
+            <p>
+                Spendly is provided as a personal tool to record, categorize,
+                and review your daily expenses. You agree to use the service
+                only for lawful purposes and in a manner that does not infringe
+                the rights of others or restrict their use of the service.
+            </p>
+            <p>
+                You are responsible for maintaining the confidentiality of your
+                account credentials and for all activity that occurs under your
+                account. Please notify us promptly if you suspect any
+                unauthorized access to your account.
+            </p>
+            <p>
+                You may not reverse-engineer, decompile, or attempt to extract
+                the source code of Spendly, nor use the service to distribute
+                malicious content or to interfere with its normal operation.
+            </p>
+        </article>
+
+        <article class="legal-section">
+            <h2 class="legal-h2">3. User Data</h2>
+            <p>
+                You retain full ownership of the expense data you enter into
+                Spendly. By using the service, you grant us a limited licence
+                to store, process, and display that data solely for the purpose
+                of providing Spendly's features to you.
+            </p>
+            <p>
+                We collect only the information needed to operate your account,
+                including your name, email address, and the expense records you
+                create. We do not sell, rent, or trade your personal
+                information to third parties.
+            </p>
+            <p>
+                You may export or delete your expense data at any time through
+                your account settings. For details on how we handle
+                information, please review our Privacy Policy.
+            </p>
+        </article>
+
+        <article class="legal-section">
+            <h2 class="legal-h2">4. Limitations of Liability</h2>
+            <p>
+                Spendly is provided on an "as is" and "as available" basis. To
+                the fullest extent permitted by law, we disclaim all warranties,
+                express or implied, including the implied warranties of
+                merchantability, fitness for a particular purpose, and
+                non-infringement.
+            </p>
+            <p>
+                We do not warrant that the service will be uninterrupted,
+                error-free, or free of harmful components, or that the results
+                obtained from using the service will be accurate or reliable.
+                Any financial decisions you make based on data shown in Spendly
+                are your own responsibility.
+            </p>
+            <p>
+                In no event shall Spendly, its developers, or its affiliates
+                be liable for any indirect, incidental, special, consequential,
+                or punitive damages arising out of or in connection with your
+                use of the service.
+            </p>
+        </article>
+
+        <article class="legal-section">
+            <h2 class="legal-h2">5. Changes to These Terms</h2>
+            <p>
+                We may update these Terms from time to time to reflect changes
+                in the service, legal requirements, or our practices. When we
+                make material changes, we will update the "Last updated" date
+                at the top of this page and, where appropriate, notify you
+                through the service or by email.
+            </p>
+            <p>
+                We encourage you to review these Terms periodically. Your
+                continued use of Spendly after a change takes effect signifies
+                your acceptance of the updated Terms.
+            </p>
+        </article>
+
+        <article class="legal-section">
+            <h2 class="legal-h2">6. Contact</h2>
+            <p>
+                If you have any questions about these Terms and Conditions,
+                please reach out to us at
+                <a href="mailto:support@spendly.app">support@spendly.app</a>.
+            </p>
+        </article>
+
+        <div class="legal-actions">
+            <a href="{{ url_for('landing') }}" class="btn-ghost">Back to home</a>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
