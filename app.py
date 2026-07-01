@@ -1,6 +1,20 @@
 from flask import Flask, render_template
 
+from database.db import init_db, seed_db
+
 app = Flask(__name__)
+
+
+# ------------------------------------------------------------------ #
+# Database initialization                                              #
+# ------------------------------------------------------------------ #
+
+# Ensure the schema exists and the demo data is seeded before the first
+# request hits a route. Both functions are idempotent, so this is safe
+# on every startup.
+with app.app_context():
+    init_db(app)
+    seed_db()
 
 
 # ------------------------------------------------------------------ #
