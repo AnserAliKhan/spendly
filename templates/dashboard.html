@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard — Spendly{% endblock %}
+
+{% block content %}
+
+<section class="auth-section">
+    <div class="auth-container">
+
+        <div class="auth-header">
+            <h1 class="auth-title">Welcome, {{ user_name }}.</h1>
+            <p class="auth-subtitle">You are signed in to Spendly</p>
+        </div>
+
+        <div class="auth-card">
+            <p>
+                Your expense tracking is just getting started — your
+                dashboard and full profile are coming in a later step.
+            </p>
+            <a href="{{ url_for('logout') }}" class="btn-submit" style="text-align: center; display: block; text-decoration: none; margin-top: 0.5rem;">Sign out</a>
+        </div>
+
+    </div>
+</section>
+
+{% endblock %}
