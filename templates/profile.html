@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %}Your profile — Spendly{% endblock %}
+
+{% block content %}
+
+<section class="profile-section">
+    <div class="profile-container">
+
+        <header class="profile-identity">
+            <div class="profile-avatar" aria-hidden="true">{{ initials }}</div>
+            <div class="profile-identity-meta">
+                <h1 class="profile-greeting">Hi, {{ user["name"] }}</h1>
+                <p class="profile-email">{{ user["email"] }}</p>
+                <span class="profile-since-pill">Member since {{ member_since }}</span>
+            </div>
+        </header>
+
+        <div class="profile-stats">
+            <div class="stat-tile">
+                <div class="stat-tile-label">Total spent</div>
+                <div class="stat-tile-value">{{ formatted_total }}</div>
+            </div>
+            <div class="stat-tile">
+                <div class="stat-tile-label">Transactions</div>
+                <div class="stat-tile-value">{{ tx_count }}</div>
+            </div>
+            <div class="stat-tile stat-tile--featured">
+                <div class="stat-tile-label">
+                    Top category
+                    <i data-lucide="trophy" class="stat-tile-icon"></i>
+                </div>
+                <div class="stat-tile-value">
+                    {{ top_category if top_category else "No expenses yet." }}
+                </div>
+            </div>
+        </div>
+
+        <section class="profile-breakdown">
+            <h2 class="breakdown-title">Spending by category</h2>
+            {% if category_rows %}
+            <table class="breakdown-table">
+                <thead>
+                    <tr>
+                        <th class="breakdown-th breakdown-th--name">Category</th>
+                        <th class="breakdown-th breakdown-th--amount">Amount</th>
+                        <th class="breakdown-th breakdown-th--share">% of total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in category_rows %}
+                    {% set pct = (row["total"] / total_spent * 100) if total_spent else 0 %}
+                    <tr class="breakdown-row">
+                        <td class="breakdown-td breakdown-td--name">{{ row["category"] }}</td>
+                        <td class="breakdown-td breakdown-td--amount">₹{{ "{:,.2f}".format(row["total"]) }}</td>
+                        <td class="breakdown-td breakdown-td--share">
+                            <div class="bar-track" data-tooltip="{{ row['category'] }} · ₹{{ '{:,.2f}'.format(row['total']) }} · {{ '%.1f' % pct }}%">
+                                <div class="bar-fill" style="width: {{ '%.1f' % pct }}%"></div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p class="breakdown-empty">No expenses yet.</p>
+            {% endif %}
+        </section>
+
+        <div class="info-list">
+            <div class="info-list-row">
+                <span class="info-list-label">Name</span>
+                <span class="info-list-value">{{ user["name"] }}</span>
+            </div>
+            <div class="info-list-row">
+                <span class="info-list-label">Email</span>
+                <span class="info-list-value">{{ user["email"] }}</span>
+            </div>
+            <div class="info-list-row">
+                <span class="info-list-label">Member since</span>
+                <span class="info-list-value">{{ member_since }}</span>
+            </div>
+        </div>
+
+        <p class="auth-switch">
+            <a href="{{ url_for('dashboard') }}">Back to dashboard</a>
+        </p>
+
+    </div>
+</section>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="https://unpkg.com/lucide@latest"></script>
+<script>
+    if (window.lucide && typeof window.lucide.createIcons === "function") {
+        window.lucide.createIcons();
+    }
+</script>
+{% endblock %}

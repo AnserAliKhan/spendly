@@ -1,4 +1,6 @@
 import sqlite3
+import sys
+from datetime import datetime
 from functools import wraps
 
 from flask import Flask, redirect, render_template, request, session, url_for
@@ -126,7 +128,12 @@ def login():
 
         session["user_id"] = row["id"]
         session["user_name"] = row["name"]
-        return redirect(url_for("landing"))
+        # Returning users land on their profile — see their stats and
+        # the category breakdown without bouncing through the marketing
+        # page first. The /login GET handler is still gated by
+        # _redirect_if_authenticated, so already-signed-in users who
+        # hit /login directly still go to / (landing) as before.
+        return redirect(url_for("profile"))
 
     return render_template("login.html")
 
@@ -159,8 +166,90 @@ def dashboard():
 
 
 @app.route("/profile")
+@_login_required
 def profile():
-    return "Profile page — coming in Step 4"
+    db = get_db()
+    user = db.execute(
+        "SELECT id, name, email, created_at FROM users WHERE id = ?",
+        (session["user_id"],),
+    ).fetchone()
+
+    total_row = db.execute(
+        "SELECT COALESCE(SUM(amount), 0) AS total FROM expenses WHERE user_id = ?",
+        (session["user_id"],),
+    ).fetchone()
+    total_spent = total_row["total"]
+
+    tx_count = db.execute(
+        "SELECT COUNT(*) AS n FROM expenses WHERE user_id = ?",
+        (session["user_id"],),
+    ).fetchone()["n"]
+
+    top_row = db.execute(
+        """
+        SELECT category, SUM(amount) AS total
+        FROM expenses
+        WHERE user_id = ?
+        GROUP BY category
+        ORDER BY total DESC
+        LIMIT 1
+        """,
+        (session["user_id"],),
+    ).fetchone()
+    top_category = top_row["category"] if top_row else None
+
+    # Per-category breakdown for the "Spending by category" table on
+    # the profile page. Same shape as the top-category query but without
+    # LIMIT 1, so we can show every category the user has spent in.
+    # Returns an empty list for a user with no expenses — the template
+    # renders the "No expenses yet." empty state in that case.
+    category_rows = db.execute(
+        """
+        SELECT category, SUM(amount) AS total
+        FROM expenses
+        WHERE user_id = ?
+        GROUP BY category
+        ORDER BY total DESC
+        """,
+        (session["user_id"],),
+    ).fetchall()
+
+    # Format total as ₹X,XXX.XX (Indian rupee, two decimals, thousands separator).
+    formatted_total = f"₹{total_spent:,.2f}"
+
+    # Initials for the avatar: first char of each of the first two
+    # whitespace-separated words, uppercased. Falls back to "?" for
+    # whitespace-only or empty names (defensive — the registration
+    # validator already rejects empty names).
+    parts = (user["name"] or "").split()
+    initials = "".join(p[0] for p in parts[:2]).upper() or "?"
+
+    # Format member-since as e.g. "18 July 2026". SQLite stores it as
+    # "YYYY-MM-DD HH:MM:SS" (datetime('now')). Falls back to the raw prefix
+    # if parsing fails (shouldn't, but defensive).
+    member_since = "—"
+    if user["created_at"]:
+        try:
+            parsed = datetime.strptime(user["created_at"], "%Y-%m-%d %H:%M:%S")
+            # %-d is Unix-only; %#d is the Windows equivalent. We branch on
+            # the platform rather than using strftime()-with-strip, which is
+            # less readable.
+            day_fmt = "%#d" if sys.platform.startswith("win") else "%-d"
+            member_since = parsed.strftime(f"{day_fmt} %B %Y")
+        except ValueError:
+            member_since = user["created_at"][:10]
+
+    return render_template(
+        "profile.html",
+        user=user,
+        total_spent=total_spent,
+        formatted_total=formatted_total,
+        tx_count=tx_count,
+        top_category=top_category,
+        member_since=member_since,
+        initials=initials,
+        category_rows=category_rows,
+    )
 
 
 @app.route("/expenses/add")
