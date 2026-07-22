@@ -299,9 +299,13 @@ a { color: inherit; text-decoration: none; }
     transition: width 0.6s ease;
 }
 
-.bar-fill.food   { background: #e6a23c; }
-.bar-fill.travel { background: #5b7fa6; }
-.bar-fill.bills  { background: #8b5e83; }
+.bar-fill--food         { background: #e6a23c; }
+.bar-fill--transport   { background: #5b7fa6; }
+.bar-fill--bills       { background: #8b5e83; }
+.bar-fill--health       { background: #27ae60; }
+.bar-fill--entertainment { background: #e74c3c; }
+.bar-fill--shopping     { background: #f39c12; }
+.bar-fill--other        { background: #95a5a6; }
 
 /* ------------------------------------------------------------------ */
 /* Buttons                                                             */
@@ -771,6 +775,33 @@ a { color: inherit; text-decoration: none; }
     font-size: 0.9rem;
     text-align: center;
 }
+
+.chart-container {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 1rem;
+    background: var(--paper-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+}
+
+/* Category badges */
+.category-badge {
+    display: inline-block;
+    padding: 0.25rem 0.6rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: #fff;
+}
+
+.category-badge--food         { background: #e6a23c; }
+.category-badge--transport   { background: #5b7fa6; }
+.category-badge--bills       { background: #8b5e83; }
+.category-badge--health       { background: #27ae60; }
+.category-badge--entertainment { background: #e74c3c; }
+.category-badge--shopping     { background: #f39c12; }
+.category-badge--other        { background: #95a5a6; }
 
 /* Bar inside the share cell — same idiom as landing.html's mock-bars */
 .breakdown-td--share .bar-track {

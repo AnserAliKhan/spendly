@@ -11,7 +11,7 @@ comments mark where future code goes. When implementing something, check the
 naming of these placeholders (e.g. `Step 4`, `Step 7`, `Step 8`, `Step 9`)
 to learn which step a feature belongs to and what shape it should take.
 
-Branding is "Spendly"; UI uses the rupee symbol (₹) and is tuned for an
+Branding is "Spendly"; UI uses the Pakistani rupee symbol (₨) and is tuned for a
 Indian-market audience. The legal copy (`terms.html`, `privacy.html`) is
 already finalized — do not regenerate or paraphrase it without being asked.
 

@@ -10,7 +10,7 @@ import random
 import sys
 from datetime import date, timedelta
 
-# Force UTF-8 stdout so the ₹ symbol prints on Windows (cp1252 default).
+# Force UTF-8 stdout so the ₨ symbol prints on Windows (cp1252 default).
 try:
     sys.stdout.reconfigure(encoding="utf-8")
 except Exception:
@@ -21,7 +21,7 @@ from flask import Flask
 from database.db import init_db, get_db
 
 
-# (name, min ₹, max ₹, weight, [descriptions])
+# (name, min ₨, max ₨, weight, [descriptions])
 # Weight drives the rough distribution: Food dominates (everyday spend),
 # Transport/Shopping/Other/Other are common, Bills routine, Entertainment
 # and Health are occasional.
@@ -144,7 +144,7 @@ def main(user_id: int, count: int, months: int) -> int:
         print(f"Date range: {agg['first_date']} to {agg['last_date']}")
         print("Sample of 5 most-recent inserted records:")
         for r in sample:
-            print(f"  id={r['id']:>3}  {r['date']}  ₹{r['amount']:>7.2f}  "
+            print(f"  id={r['id']:>3}  {r['date']}  ₨{r['amount']:>7.2f}  "
                   f"{r['category']:<14}  {r['description']}")
         return 0
 
