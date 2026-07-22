@@ -214,8 +214,23 @@ def profile():
         (session["user_id"],),
     ).fetchall()
 
-    # Format total as ₹X,XXX.XX (Indian rupee, two decimals, thousands separator).
-    formatted_total = f"₹{total_spent:,.2f}"
+    # Individual expenses for the detailed table with descriptions
+    expense_rows = db.execute(
+        """
+        SELECT id, amount, category, date, description
+        FROM expenses
+        WHERE user_id = ?
+        ORDER BY date DESC
+        """,
+        (session["user_id"],),
+    ).fetchall()
+
+    # Convert sqlite3.Row objects to dicts so they can be JSON-serialized
+    # for the Chart.js pie chart in the template.
+    category_rows = [dict(row) for row in category_rows]
+
+    # Format total as ₨X,XXX.XX (Pakistani rupee, two decimals, thousands separator).
+    formatted_total = f"₨{total_spent:,.2f}"
 
     # Initials for the avatar: first char of each of the first two
     # whitespace-separated words, uppercased. Falls back to "?" for
@@ -249,6 +264,7 @@ def profile():
         member_since=member_since,
         initials=initials,
         category_rows=category_rows,
+        expense_rows=expense_rows,
     )
 
 

@@ -52,16 +52,57 @@
                     {% set pct = (row["total"] / total_spent * 100) if total_spent else 0 %}
                     <tr class="breakdown-row">
                         <td class="breakdown-td breakdown-td--name">{{ row["category"] }}</td>
-                        <td class="breakdown-td breakdown-td--amount">₹{{ "{:,.2f}".format(row["total"]) }}</td>
+                        <td class="breakdown-td breakdown-td--amount">₨{{ "{:,.2f}".format(row["total"]) }}</td>
                         <td class="breakdown-td breakdown-td--share">
-                            <div class="bar-track" data-tooltip="{{ row['category'] }} · ₹{{ '{:,.2f}'.format(row['total']) }} · {{ '%.1f' % pct }}%">
-                                <div class="bar-fill" style="width: {{ '%.1f' % pct }}%"></div>
+                            <div class="bar-track" data-tooltip="{{ row['category'] }} · ₨{{ '{:,.2f}'.format(row['total']) }} · {{ '%.1f' % pct }}%">
+                                <div class="bar-fill bar-fill--{{ row['category']|lower }}" style="width: {{ '%.1f' % pct }}%"></div>
                             </div>
                         </td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
+            {% else %}
+            <p class="breakdown-empty">No expenses yet.</p>
+            {% endif %}
+        </section>
+
+        <section class="profile-breakdown">
+            <h2 class="breakdown-title">All Expenses</h2>
+            {% if expense_rows %}
+            <table class="breakdown-table">
+                <thead>
+                    <tr>
+                        <th class="breakdown-th breakdown-th--name">Date</th>
+                        <th class="breakdown-th breakdown-th--name">Category</th>
+                        <th class="breakdown-th breakdown-th--amount">Amount</th>
+                        <th class="breakdown-th breakdown-th--name">Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in expense_rows %}
+                    <tr class="breakdown-row">
+                        <td class="breakdown-td breakdown-td--name">{{ row["date"] }}</td>
+                        <td class="breakdown-td breakdown-td--name">
+                            <span class="category-badge category-badge--{{ row['category']|lower }}">{{ row["category"] }}</span>
+                        </td>
+                        <td class="breakdown-td breakdown-td--amount">₨{{ "{:,.2f}".format(row["amount"]) }}</td>
+                        <td class="breakdown-td breakdown-td--name">{{ row["description"] or "—" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p class="breakdown-empty">No expenses yet.</p>
+            {% endif %}
+        </section>
+
+        <section class="profile-breakdown">
+            <h2 class="breakdown-title">Category Share</h2>
+            {% if category_rows %}
+            <div class="chart-container">
+                <canvas id="categoryPieChart"></canvas>
+            </div>
             {% else %}
             <p class="breakdown-empty">No expenses yet.</p>
             {% endif %}
@@ -93,9 +134,68 @@
 
 {% block scripts %}
 <script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     if (window.lucide && typeof window.lucide.createIcons === "function") {
         window.lucide.createIcons();
+    }
+
+    // Pie chart for category share
+    const categoryPieChart = document.getElementById('categoryPieChart');
+    if (categoryPieChart) {
+        const categoryData = {{ category_rows|tojson }};
+        const totalSpent = {{ total_spent }};
+
+        const labels = categoryData.map(row => row.category);
+        const data = categoryData.map(row => row.total);
+        const colors = {
+            'Food': '#e6a23c',
+            'Transport': '#5b7fa6',
+            'Bills': '#8b5e83',
+            'Health': '#27ae60',
+            'Entertainment': '#e74c3c',
+            'Shopping': '#f39c12',
+            'Other': '#95a5a6'
+        };
+        const backgroundColors = labels.map(cat => colors[cat] || '#95a5a6');
+
+        new Chart(categoryPieChart, {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: data,
+                    backgroundColor: backgroundColors,
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            usePointStyle: true,
+                            font: {
+                                family: "'DM Sans', system-ui, sans-serif"
+                            }
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const value = context.parsed;
+                                const percentage = ((value / totalSpent) * 100).toFixed(1);
+                                return ' ₨' + value.toLocaleString('en-US', {minimumFractionDigits: 2}) + ' (' + percentage + '%)';
+                            }
+                        }
+                    }
+                },
+                cutout: '60%'
+            }
+        });
     }
 </script>
 {% endblock %}
